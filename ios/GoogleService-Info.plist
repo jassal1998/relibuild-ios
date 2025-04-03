@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyAvBQuMq82D-PZo1Fag4W0mIh19D-1bvSo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>197058203624</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>app.relibuildv3.com</string>
+	<key>PROJECT_ID</key>
+	<string>tradesmens-2cda9</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tradesmens-2cda9.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:197058203624:ios:195202398771dc4b29de5d</string>
+	<key>DATABASE_URL</key>
+	<string>https://tradesmens-2cda9-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

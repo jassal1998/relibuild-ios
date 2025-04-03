@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "197058203624",
+    "firebase_url": "https://tradesmens-2cda9-default-rtdb.firebaseio.com",
+    "project_id": "tradesmens-2cda9",
+    "storage_bucket": "tradesmens-2cda9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197058203624:android:ed331fcd9086834929de5d",
+        "android_client_info": {
+          "package_name": "com.relibuild"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnqG5CCCD3EwOCATuclTlRS7QRI5GYU3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197058203624:android:2717c8b916db1c9e29de5d",
+        "android_client_info": {
+          "package_name": "com.tradesmens"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnqG5CCCD3EwOCATuclTlRS7QRI5GYU3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
