@@ -36,6 +36,38 @@ import {color, Icon} from '@rneui/base';
 
 const {width, height} = Dimensions.get('window');
 
+
+export const requestPermissionsvediio = async () => {
+  if (Platform.OS === 'android') {
+    const permissions = [
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    ];
+    const granted = await PermissionsAndroid.requestMultiple(permissions);
+
+    return (
+      granted[PermissionsAndroid.PERMISSIONS.CAMERA] ===
+        PermissionsAndroid.RESULTS.GRANTED &&
+      granted[PermissionsAndroid.PERMISSIONS.RECORD_AUDIO] ===
+        PermissionsAndroid.RESULTS.GRANTED &&
+      granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] ===
+        PermissionsAndroid.RESULTS.GRANTED &&
+      granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] ===
+        PermissionsAndroid.RESULTS.GRANTED
+    );
+  }
+  return true; // iOS auto-handles permissions
+};
+
+
+
+
+
+
+
+
 const SubmitQuery = ({route}: {route: any}) => {
   const dispatch: any = useDispatch();
   const formData = useSelector((state: RootState) => state.form);
@@ -152,42 +184,19 @@ const SubmitQuery = ({route}: {route: any}) => {
     const colorScheme = useColorScheme();
 
     const isDarkMode = colorScheme === 'dark';
-    const requestPermissions = async () => {
-      if (Platform.OS === 'android') {
-        const permissions = [
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        ];
-        const granted = await PermissionsAndroid.requestMultiple(permissions);
-  
-        return (
-          granted[PermissionsAndroid.PERMISSIONS.CAMERA] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          granted[PermissionsAndroid.PERMISSIONS.RECORD_AUDIO] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] ===
-            PermissionsAndroid.RESULTS.GRANTED
-        );
-      }
-      return true; // iOS auto-handles permissions
-    };
-    
+   
 
-useEffect(() => {
-  (async () => {
-    const hasPermissions = await requestPermissions();
-    if (!hasPermissions) {
-      Alert.alert(
-        'Permissions Denied',
-        'Please enable camera and storage permissions from settings to use this feature.',
-      );
-    }
-  })();
-}, []);
+// useEffect(() => {
+//   (async () => {
+//     const hasPermissions = await requestPermissionsvediio();
+//     if (!hasPermissions) {
+//       Alert.alert(
+//         'Permissions Denied',
+//         'Please enable camera and storage permissions from settings to use this feature.',
+//       );
+//     }
+//   })();
+// }, []);
 
 
 const handlePickVideo = async () => {

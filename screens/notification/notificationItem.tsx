@@ -1,9 +1,10 @@
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import messaging, {
+  FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import notifee, { AndroidImportance } from '@notifee/react-native';
-import { Platform, AppState } from 'react-native';
+import notifee, {AndroidImportance} from '@notifee/react-native';
+import {Platform, AppState} from 'react-native';
 
-// Notification Type
 interface Notification {
   id: string;
   title: string;
@@ -11,21 +12,25 @@ interface Notification {
   read: boolean;
 }
 
-// Listeners for real-time updates
+
 let notificationListeners: ((notification: Notification) => void)[] = [];
 
-// ✅ Add & Remove Listeners
-export const addNotificationListener = (listener: (notification: Notification) => void) => {
+
+export const addNotificationListener = (
+  listener: (notification: Notification) => void,
+) => {
   notificationListeners.push(listener);
 };
-export const removeNotificationListener = (listener: (notification: Notification) => void) => {
+export const removeNotificationListener = (
+  listener: (notification: Notification) => void,
+) => {
   notificationListeners = notificationListeners.filter(l => l !== listener);
 };
 
 export const requestPermission = async () => {
   try {
-    const authStatus = await messaging().requestPermission();
-    
+    const authStatus = await messaging().requestPermission(); 
+
     if (authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
       console.log('✅ Permission Granted');
     } else if (authStatus === messaging.AuthorizationStatus.PROVISIONAL) {
@@ -38,7 +43,6 @@ export const requestPermission = async () => {
   }
 };
 
-// ✅ 2. Get FCM Token
 export const getFcmToken = async () => {
   try {
     let fcmToken = await AsyncStorage.getItem('fcmToken');
@@ -59,7 +63,7 @@ export const getFcmToken = async () => {
   }
 };
 
-// ✅ 3. Save & Load Notifications
+
 const saveNotifications = async (notifications: Notification[]) => {
   try {
     await AsyncStorage.setItem('notifications', JSON.stringify(notifications));
@@ -78,12 +82,12 @@ export const loadNotifications = async () => {
   }
 };
 
-// ✅ 4. Handle Incoming Notifications
+
 export const handleNotification = async (
   remoteMessage: FirebaseMessagingTypes.RemoteMessage,
   notifications: Notification[],
   setNotifications: (notifications: Notification[]) => void,
-  setUnreadCount: (count: number) => void
+  setUnreadCount: (count: number) => void,
 ) => {
   const newNotification: Notification = {
     id: Date.now().toString(),
@@ -97,7 +101,7 @@ export const handleNotification = async (
   setUnreadCount(notifications.length);
   notificationListeners.forEach(listener => listener(newNotification));
 
-  // ✅ Show Notification in Foreground
+ 
   if (AppState.currentState === 'active') {
     if (Platform.OS === 'android') {
       await notifee.createChannel({
@@ -109,44 +113,62 @@ export const handleNotification = async (
     await notifee.displayNotification({
       title: newNotification.title,
       body: newNotification.body,
-      android: { channelId: 'default', sound: 'default' },
-      ios: { sound: 'default' },
+      android: {channelId: 'default', sound: 'default'},
+      ios: {sound: 'default'},
     });
   }
 };
 
-// ✅ 5. Initialize Notifications
 export const initializeNotifications = async (
   setUnreadCount: React.Dispatch<React.SetStateAction<number>>,
-  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>
+  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>,
 ) => {
   await requestPermission();
   await getFcmToken();
 
-  // ✅ Foreground Messages
+
   messaging().onMessage(async remoteMessage => {
     const storedNotifications = await loadNotifications();
-    handleNotification(remoteMessage, storedNotifications, setNotifications, setUnreadCount);
+    handleNotification(
+      remoteMessage,
+      storedNotifications,
+      setNotifications,
+      setUnreadCount,
+    );
   });
 
-  // ✅ Background & Quit Messages
+
   messaging().setBackgroundMessageHandler(async remoteMessage => {
     const storedNotifications = await loadNotifications();
-    handleNotification(remoteMessage, storedNotifications, setNotifications, setUnreadCount);
+    handleNotification(
+      remoteMessage,
+      storedNotifications,
+      setNotifications,
+      setUnreadCount,
+    );
   });
 
-  // ✅ Opened from Quit State
-  messaging().getInitialNotification().then(remoteMessage => {
-    if (remoteMessage) {
-      const storedNotifications = loadNotifications();
-      storedNotifications.then(notifs =>
-        handleNotification(remoteMessage, notifs, setNotifications, setUnreadCount)
-      );
-    }
-  });
 
-  // ✅ Load stored notifications on startup
+  messaging()
+    .getInitialNotification()
+    .then(remoteMessage => {
+      if (remoteMessage) {
+        const storedNotifications = loadNotifications();
+        storedNotifications.then(notifs =>
+          handleNotification(
+            remoteMessage,
+            notifs,
+            setNotifications,
+            setUnreadCount,
+          ),
+        );
+      }
+    });
+
+
   const storedNotifications = await loadNotifications();
   setNotifications(storedNotifications);
-  setUnreadCount(storedNotifications.filter((n: { read: any }) => !n.read).length);
+  setUnreadCount(
+    storedNotifications.filter((n: {read: any}) => !n.read).length,
+  );
 };

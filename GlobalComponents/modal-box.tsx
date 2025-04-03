@@ -10,7 +10,7 @@ import {
   Pressable,
 } from "react-native";
 import React, { useCallback, useRef, useState } from "react";
-
+import LottieView from 'lottie-react-native';
 interface ThankyouModalProps {
   visible: boolean;
   onClose: () => void;
@@ -30,6 +30,15 @@ const ThankyouModal: React.FC<ThankyouModalProps> = ({ visible, onClose }) => {
           <Text style={styles.modalMessage}>
             Your query has been submitted successfully.
           </Text>
+          <View>
+        <LottieView
+            source={require('../assets/animmation/Animation - 1733292214682.json')}
+            autoPlay
+            loop
+            style={styles.aniimation}
+          />
+         </View>
+
           <Pressable onPress={onClose} style={styles.modalButton}>
             <Text style={styles.modalButtonText}>Close</Text>
           </Pressable>
@@ -57,10 +66,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
+    textAlign:"center"
   },
   modalMessage: {
     fontSize: 16,
-    marginBottom: 20,
+   textAlign:"center"
+    
   },
   modalButton: {
     padding: 10,
@@ -70,6 +81,11 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  aniimation: {
+    width:120,
+    height: 120,
+    marginBottom:20
   },
 });
 

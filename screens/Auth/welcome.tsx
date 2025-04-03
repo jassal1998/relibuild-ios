@@ -93,11 +93,11 @@ export default function Welcome() {
         />
          <View>
            <TouchableOpacity style={{  backgroundColor: "transparent",
-            borderColor: GlobalStyles.colors.primary,
-            borderWidth: 1,
+          
+      
             borderRadius: 8,
             padding: 5,}} onPress={()=>navigation.navigate("Home")}>
-             <Text style={{color:"blue"}}>Skip</Text>
+             <Text style={{color:GlobalStyles.colors.primary,fontWeight:"bold"}}>Skip</Text>
            </TouchableOpacity>
          </View>
       </View>
