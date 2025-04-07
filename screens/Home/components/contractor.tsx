@@ -77,8 +77,8 @@ const handlePress = () => {
       id: item.id,
       firstName: item.user_first_name,
       profile: item.ua_profile ? JSON.parse(item.ua_profile).label : "NA",
-      img: item.ua_profile_pic == null ? "https://randomuser.me/api/portraits/men/41.jpg":item.ua_profile_pic,
-      rating: "3.5",
+      img: item.ua_profile_pic == null ? "https://res.cloudinary.com/dvnxszfqa/image/upload/v1718022473/contractor-relibuild_his9if.jpg":item.ua_profile_pic,
+      rating: "5",
     })),
     {
       id: -1, // Unique ID for the "View More" item

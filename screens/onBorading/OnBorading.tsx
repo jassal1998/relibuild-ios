@@ -74,23 +74,25 @@ if (!isChecked) {
 
   const handleGetStarted = async () => {
     try {
-      console.log("Setting onboarding status to true...");
+    
       await AsyncStorage.setItem("hasCompletedOnboarding", "true");
-
-      
+  
+    
       const storedValue = await AsyncStorage.getItem("hasCompletedOnboarding");
-      console.log("Stored value in AsyncStorage:", storedValue);
-
-
-      const token = await AsyncStorage.getItem("userToken"); 
-
+      console.log("Stored onboarding value:", storedValue);
+  
+     
+      const token = await AsyncStorage.getItem("userToken");
+  
       if (token) {
-        navigation.navigate("Home"); 
+      
+        navigation.navigate("Home");
       } else {
-        navigation.navigate("Welcome"); // If no token, navigate to Welcome
+       
+        navigation.navigate("Welcome");
       }
     } catch (error) {
-      console.error("Error saving onboarding status:", error);
+      console.error("Error during onboarding process:", error);
     }
   };
 

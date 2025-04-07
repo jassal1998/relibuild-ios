@@ -60,7 +60,7 @@ const [notifications, setNotifications] = useState<any[]>([]);
           <TouchableOpacity
             onPress={() => navigation.openDrawer()}
             style={style.iconContainerLeft}>
-            <MaterialIcons name="menu" size={30} color="grey" />
+            <MaterialIcons name="menu" size={20} color="grey" />
           </TouchableOpacity>
         ),
         headerRight: () => (
@@ -71,7 +71,7 @@ const [notifications, setNotifications] = useState<any[]>([]);
               <View>
                 <Icon
                   name="notifications"
-                  size={30}
+                  size={20}
                   color="grey"
                   type="material"
                 />
@@ -182,9 +182,9 @@ const [notifications, setNotifications] = useState<any[]>([]);
           ),
 
           headerStyle: {
-            borderBottomLeftRadius: 30,
+            // borderBottomLeftRadius: 30,
             backgroundColor: '#325573',
-            borderBottomRightRadius: 30,
+            // borderBottomRightRadius: 30,
             height: 100,
           },
           headerTitleStyle: {color: 'white'},

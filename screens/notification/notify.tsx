@@ -1,11 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, FlatList, StyleSheet, AppState, TouchableOpacity} from 'react-native';
-import { getApp } from '@react-native-firebase/app';
-import { getMessaging, onMessage, setBackgroundMessageHandler, getInitialNotification } from '@react-native-firebase/messaging';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  AppState,
+  TouchableOpacity,
+} from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 import {
   requestPermission,
   getFcmToken,
- 
+  loadNotifications,
+  handleNotification,
+  initializeNotifications,
+  processNotification,
 } from '../notification/notificationItem';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,77 +34,74 @@ export default function NotificationScreen() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    // Request permission and get FCM token
     requestPermission();
     getFcmToken();
 
-    // // Load stored notifications
-    // loadNotifications().then(setNotifications);
+    initializeNotifications(setUnreadCount, setNotifications);
 
-    const app = getApp();
-    const messaging = getMessaging(app);
-
-    // Listen for foreground messages
-    const unsubscribeOnMessage = onMessage(messaging, remoteMessage => {
-      // handleNotification(remoteMessage, notifications, setNotifications, setUnreadCount, );
-    });
-
-    // Handle background messages (async callback to return a promise)
-    setBackgroundMessageHandler(messaging, async remoteMessage => {
-      // await handleNotification(remoteMessage, notifications, setNotifications, setUnreadCount, );
-    });
-
-    // Check if app was opened via a notification
-    getInitialNotification(messaging).then(remoteMessage => {
-      if (remoteMessage) {
-        // handleNotification(remoteMessage, notifications, setNotifications, setUnreadCount, );
+    const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
+      if (AppState.currentState === 'active') {
+        processNotification(remoteMessage);
+        const storedNotifications = await loadNotifications();
+        setNotifications(storedNotifications);
+        setUnreadCount(storedNotifications.filter((n: { read: any; }) => !n.read).length);
       }
+    });
+
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      await AsyncStorage.setItem('lastNotification', JSON.stringify(remoteMessage));
+    });
+
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      if (remoteMessage) {
+     
+      }
+    });
+
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          // navigation.navigate('Notification');
+        }
+      });
+
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      setAppState(nextAppState);
     });
 
     return () => {
       unsubscribeOnMessage();
+      subscription.remove();
     };
-  }, [appState, notifications]);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', setAppState);
-    return () => subscription.remove();
   }, []);
 
   useEffect(() => {
-    setUnreadCount(notifications.filter(n => !n.read).length);
+    const count = notifications.filter(n => !n.read).length;
+    setUnreadCount(count);
   }, [notifications]);
 
-  // Mark all notifications as read
   const markAllAsRead = async () => {
-    const updatedNotifications = notifications.map(n => ({...n, read: true}));
-    setNotifications(updatedNotifications);
+    const updated = notifications.map(n => ({...n, read: true}));
+    setNotifications(updated);
     setUnreadCount(0);
-    await AsyncStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+    await AsyncStorage.setItem('notifications', JSON.stringify(updated));
   };
 
-  // Mark a single notification as read
   const markAsRead = async (id: string) => {
-    setNotifications(prevNotifications => {
-      const updatedNotifications = prevNotifications.map(n =>
-        n.id === id ? {...n, read: true} : n,
-      );
-      const unreadNotifications = updatedNotifications.filter(n => !n.read);
-      setUnreadCount(unreadNotifications.length);
-      AsyncStorage.setItem('notifications', JSON.stringify(updatedNotifications));
-      return updatedNotifications;
-    });
+    const updated = notifications.map(n =>
+      n.id === id ? {...n, read: true} : n,
+    );
+    setNotifications(updated);
+    setUnreadCount(updated.filter(n => !n.read).length);
+    await AsyncStorage.setItem('notifications', JSON.stringify(updated));
   };
 
-  // Delete a notification
   const deleteNotification = async (id: string) => {
-    setNotifications(prevNotifications => {
-      const updatedNotifications = prevNotifications.filter(n => n.id !== id);
-      const unreadNotifications = updatedNotifications.filter(n => !n.read);
-      setUnreadCount(unreadNotifications.length);
-      AsyncStorage.setItem('notifications', JSON.stringify(updatedNotifications));
-      return updatedNotifications;
-    });
+    const updated = notifications.filter(n => n.id !== id);
+    setNotifications(updated);
+    setUnreadCount(updated.filter(n => !n.read).length);
+    await AsyncStorage.setItem('notifications', JSON.stringify(updated));
   };
 
   return (
@@ -113,8 +119,14 @@ export default function NotificationScreen() {
         data={notifications}
         keyExtractor={item => item.id}
         renderItem={({item}) => (
-          <View style={[styles.notificationCard, item.read && styles.readNotification]}>
-            <TouchableOpacity style={styles.notificationContent} onPress={() => markAsRead(item.id)}>
+          <View
+            style={[
+              styles.notificationCard,
+              item.read && styles.readNotification,
+            ]}>
+            <TouchableOpacity
+              style={styles.notificationContent}
+              onPress={() => markAsRead(item.id)}>
               <Text style={styles.notificationTitle}>{item.title}</Text>
               <Text style={styles.notificationBody}>{item.body}</Text>
             </TouchableOpacity>
@@ -123,7 +135,9 @@ export default function NotificationScreen() {
             </TouchableOpacity>
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.noNotification}>No notifications yet</Text>}
+        ListEmptyComponent={
+          <Text style={styles.noNotification}>No notifications yet</Text>
+        }
       />
     </View>
   );

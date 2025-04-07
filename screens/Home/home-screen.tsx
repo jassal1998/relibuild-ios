@@ -7,6 +7,9 @@ import {
   Dimensions,
   ActivityIndicator,
   RefreshControl,
+  Alert,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import SearchSection from '../../GlobalComponents/search';
 import ContractorSection from './components/contractor';
@@ -20,6 +23,9 @@ import Properties from './components/properties';
 import Serach from '../../GlobalComponents/serach';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import Placeholder from './components/placeholder';
+import {requestPermissionsvediio} from '../Submit-Query/submitQuery';
+import {requestPermission} from '@react-native-firebase/messaging';
+import messaging from '@react-native-firebase/messaging';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -27,6 +33,69 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const dispatch: any = useDispatch();
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      const hasPermissions = await requestPermissionsvediio();
+      if (!hasPermissions) {
+        // Alert.alert(
+        //   'Permission Required',
+        //   'Please allow camera, microphone, and storage permissions to continue.'
+        // );
+      } else {
+        console.log('✅ All permissions granted');
+      }
+    }, 1000); 
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  
+  useEffect(() => {
+    const askNotificationPermission = async () => {
+      try {
+        const authStatus = await messaging().requestPermission(); 
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        if (enabled) {
+          console.log('✅ Firebase messaging permission granted');
+        }
+        if (Platform.OS === 'android' && Platform.Version >= 33) {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+          );
+
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('✅ Android POST_NOTIFICATIONS permission granted');
+          } else {
+            console.log('❌ Android POST_NOTIFICATIONS permission denied');
+          }
+        }
+      } catch (err) {
+        console.log('❌ Permission error:', err);
+      }
+    };
+
+    askNotificationPermission();
+
+    const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('📩 Notification Opened:', remoteMessage);
+    });
+
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log('🚀 App opened by Notification:', remoteMessage);
+        }
+      });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     getContractors();

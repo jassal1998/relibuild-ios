@@ -10,7 +10,7 @@ const SpinnerLoading = () => {
     <Modal visible={spinnerLoading?true:false} transparent={true} animationType="fade">
       <View style={styles.container}>
         <View style={styles.spinnerContainer}>
-          <ActivityIndicator size={30} color="#f5874f" />
+          <ActivityIndicator size={30} color="#325573" />
           <LocalText style={styles.loadingText}>{spinnerLoading}</LocalText>
         </View>
       </View>
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     display:'flex',
     flex:1,
     flexDirection:'row',
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+    backgroundColor: "rgba(0, 0, 0, 0.5)", 
   },
   spinnerContainer: {
     backgroundColor: "#fff",

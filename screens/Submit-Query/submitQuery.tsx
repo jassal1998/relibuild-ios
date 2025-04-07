@@ -213,15 +213,10 @@ const handlePickVideo = async () => {
               videoQuality: 'high',
               saveToPhotos: true,
             });
-
-            if (result.didCancel) {
-              console.log('Camera action canceled.');
-            } else if (result.errorCode) {
-              console.log('Error recording video:', result.errorMessage);
-            } else if (result.assets && result.assets.length > 0) {
-              const videoUri = result.assets[0].uri;
-              console.log('Video recorded:', videoUri);
-              setSelectedVideoUri(videoUri); // ✅ Update state
+            const asset = result?.assets?.[0];
+            if (asset?.uri) {
+              setSelectedVideoUri(asset.uri);
+              console.log('📹 Video recorded:', asset.uri);
             }
           } catch (error) {
             console.error('🚨 Error launching camera:', error);
@@ -235,26 +230,26 @@ const handlePickVideo = async () => {
             const result = await launchImageLibrary({
               mediaType: 'video',
             });
-
-            if (result.didCancel) {
-              console.log('Library picker canceled.');
-            } else if (result.errorCode) {
-              console.log('Error picking video:', result.errorMessage);
-            } else if (result.assets && result.assets.length > 0) {
-              const videoUri = result.assets[0].uri;
-              console.log('Video selected from gallery:', videoUri);
-              setSelectedVideoUri(videoUri); // ✅ Update state
+            const asset = result?.assets?.[0];
+            if (asset?.uri) {
+              setSelectedVideoUri(asset.uri);
+              console.log('🎞️ Video selected from gallery:', asset.uri);
             }
           } catch (error) {
             console.error('🚨 Error launching gallery:', error);
           }
         },
       },
-      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
     ],
-    { cancelable: true },
+    { cancelable: true }
   );
 };
+
+
 
   useEffect(() => {
     const allValuesPresent =

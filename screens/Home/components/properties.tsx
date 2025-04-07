@@ -140,8 +140,8 @@ export default function Properties() {
                         fontWeight: "bold",
                       }}
                     >
-                      {" "}
-                      1 day ago{" "}
+                      
+                      1 day ago
                     </Text>
 
                     <Text
@@ -338,10 +338,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   container2: {
-    flexDirection: "row", // Arrange items in a row
-    justifyContent: "space-between", // Space out the elements
-    alignItems: "center", // Vertically align both the text and button
-    paddingHorizontal: 20, // Add horizontal padding
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    alignItems: "center", 
+    paddingHorizontal: 20, 
     marginVertical: 5,
   },
   sreach: {

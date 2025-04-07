@@ -23,53 +23,77 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {initializeNotifications} from './screens/notification/notificationItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { requestPermissionsvediio } from './screens/Submit-Query/submitQuery';
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
+import { navigate, navigationRef } from './navigationservice';
 
 const store = configureStore({reducer: rootReducer, devTools: true});
 
 const {width, height} = Dimensions.get('window');
 
-export default function App({navigation}: {navigation: any}) {
+const App = ({ navigation }: { navigation: any }) => {
   const [loading, setLoading] = useState(true);
   const [currentTextIndex, setCurrentTextIndex] = useState<any>(0);
   const [currentImage, setCurrentImage] = useState(-1);
   const [showImages, setShowImages] = useState(false);
-  const [isAppReady, setIsAppReady] = useState(false); // New state to track app readiness
-
-  const [unreadCount, setUnreadCount] = useState<number>(0);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  
-  useEffect(() => {
-    (async () => {
-      console.log('🚀 useEffect running...'); // Debug log
-
-      const hasPermissions = await requestPermissionsvediio();
-      if (!hasPermissions) {
-        Alert.alert(
-          'Permissions Denied',
-          'Please enable camera and storage permissions from settings to use this feature.'
-        );
-      } else {
-        console.log('✅ All permissions granted');
-      }
-    })();
-  }, []);
-
-
+  const [isAppReady, setIsAppReady] = useState(false); 
 
   useEffect(() => {
-    requestPermission(messaging());
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('📩 Notification Opened:', remoteMessage);
-    });
-
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          console.log('🚀 App opened by Notification:', remoteMessage);
-        }
+    const init = async () => {
+      await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+        importance: AndroidImportance.HIGH,
+        sound: 'default',
       });
+    };
+  
+    init();
+  
+    // Handle foreground push notification
+    const unsubscribeMessage = messaging().onMessage(async remoteMessage => {
+      await notifee.displayNotification({
+        title: remoteMessage.notification?.title,
+        body: remoteMessage.notification?.body,
+        android: {
+          channelId: 'default',
+          sound: 'default',
+          pressAction: { id: 'default' }, // VERY IMPORTANT
+        },
+        ios: { sound: 'default' },
+      });
+    });
+  
+    // Handle click on notification (Foreground)
+    const unsubscribeForeground = notifee.onForegroundEvent(({ type, detail }) => {
+      if (type === EventType.PRESS) {
+        navigate('Notification');
+      }
+    });
+  
+    // Handle click on notification (Background / Killed)
+    notifee.onBackgroundEvent(async ({ type, detail }) => {
+      if (type === EventType.PRESS) {
+        navigate('Notification');
+      }
+    });
+  
+    // Handle cold start launch from notification
+    notifee.getInitialNotification().then(initialNotification => {
+      if (initialNotification) {
+        navigate('Notification');
+      }
+    });
+  
+    return () => {
+      unsubscribeMessage();
+      unsubscribeForeground();
+    };
   }, []);
+
+
+
+
+
 
   const loadingTexts = [
     'Hire Contractors',
@@ -90,7 +114,7 @@ export default function App({navigation}: {navigation: any}) {
           return prevIndex;
         }
       });
-    }, 600);
+    }, 1000);
 
     return () => clearInterval(textInterval);
   }, []);
@@ -123,7 +147,7 @@ export default function App({navigation}: {navigation: any}) {
       ) : (
         <GestureHandlerRootView style={{flex: 1}}>
           <SafeAreaProvider>
-            <NavigationContainer>
+            <NavigationContainer  ref={navigationRef}>
               <MainNavigator />
             </NavigationContainer>
           </SafeAreaProvider>
@@ -175,6 +199,4 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
-function dispatch(arg0: any) {
-  throw new Error('Function not implemented.');
-}
+export default App;

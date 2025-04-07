@@ -193,7 +193,7 @@ const MainNavigator: React.FC<MainNavigatorProps> = () => {
                   <Avatar
     rounded
     source={{
-      uri: contractorData?.ua_profile_pic || contractorData?.img || 'https://randomuser.me/api/portraits/men/41.jpg',
+      uri: contractorData?.ua_profile_pic || contractorData?.img || 'https://res.cloudinary.com/dvnxszfqa/image/upload/v1718022473/contractor-relibuild_his9if.jpg',
     }}
     size="medium"
   />

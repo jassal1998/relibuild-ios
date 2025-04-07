@@ -15,6 +15,7 @@ import { searchContractor } from "../../slices/thunk";
 import { useDispatch, useSelector } from "react-redux";
 
 type Contractors = {
+  ua_zip_code: ReactNode;
   ua_profile: any;
   user_first_name: any;
   id: string;
@@ -62,7 +63,7 @@ console.log(contractors,"dfdfdf")
   source={
     item.ua_profile_pic
       ? { uri: item.ua_profile_pic } 
-      : require('../../assets/images/men.png')
+      : require('../../assets/images/relibuild.jpg')
   }
   style={style.image}
 />
@@ -90,7 +91,7 @@ console.log(contractors,"dfdfdf")
                 marginRight: 5,
                 textAlign: 'center',
               }}>
-              4
+              5
             </Text>
             {/* Add star icon */}
             <Icon
@@ -112,7 +113,7 @@ console.log(contractors,"dfdfdf")
             <Text style={[style.work, {fontSize: 10}]} allowFontScaling={false}>
               {item.ua_profile
                 ? JSON.parse(item.ua_profile).label
-                : 'No label available'}{' '}
+                : 'No label available'}
               (full time)
             </Text>
           </View>
@@ -120,18 +121,18 @@ console.log(contractors,"dfdfdf")
           <Text
             style={{fontSize: 11, fontWeight: 'bold', right: 3}}
             allowFontScaling={false}>
-            Experience-20 year
+            Experience-N/A
           </Text>
 
           <Text
             style={{fontSize: 11, fontWeight: 'bold'}}
             allowFontScaling={false}>
-            Availability - 12:00 am to 6:00 pm
+            Availability - N/A
           </Text>
           <Text
             style={{fontSize: 11, fontWeight: 'bold'}}
             allowFontScaling={false}>
-            Zipcode - 123456
+       Zipcode - {item.ua_zip_code || 'N/A'}
           </Text>
         </View>
       </View>

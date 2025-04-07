@@ -503,14 +503,14 @@ openFile()
         <View style={{
           marginTop:10
         }}>
-    {!contractDetails ? (
+    {/* {!contractDetails ? (
       <LocalButton  bg={'#3762EA'} color={'white'} onPress={() => setModalVisible(true)} title={'Create Contract'} />
        
         ) : (
           <LocalButton  bg={'#E29C33'} color={'white'} onPress={() => setModalVisible(true)} title={'Update Contract'} />
 
      
-        )}
+        )} */}
         </View>
     
 
