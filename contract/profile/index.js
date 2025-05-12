@@ -35,9 +35,14 @@ import { useTranslation } from 'react-i18next';
 import LocalTextInput from '../utility/comp/localTextInput';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
+import { GlobalStyles } from '../../constants/style';
+import { useNavigation } from '@react-navigation/native';
 
 
 const ProfileSetting = () => {
+const navigation=useNavigation()
+
+
   useEffect(() => {
     const loadToken = async () => {
       try {
@@ -317,381 +322,378 @@ getImgUrl("/proposal/upload/profile",res.assets[0],'ua_profile_pic','profilePic'
     })
   }
   return (
-    
-    <View style={{
-        flex:1,
-        backgroundColor:'white'
-    }}>
-     
-
-      {localUserDetails?.ua_cover_pic ? <ImageBackground
-  style={{
-    height: 190,
-    backgroundColor:'gray',
-    position: 'relative', // Ensure child elements respect absolute positioning
-  }}
-  source={{
-    uri: localUserDetails?.ua_cover_pic ? localUserDetails.ua_cover_pic : '',
-  }}
->
-  <TouchableOpacity
-    style={{
-      position: 'absolute',
-      top: 60, // Adjust distance from the top edge
-      right: 10, // Adjust distance from the right edge
-      borderRadius: 20, // Rounded background for better aesthetics
-      padding: 8, // Add padding around the icon for better clickability
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-    onPress={onEditCoverPress}
-  >
-    <MaterialCommunityIcons name="pencil" size={24} color="white" />
-  </TouchableOpacity>
-</ImageBackground> :
-<View
-  style={{
-    height: 190,
-    backgroundColor:grayColor,
-    justifyContent: 'center',
-    flexDirection:'row',
-    display:'flex',
-    alignItems: 'center',
-  }}
+    <>
+      {userID && token ? (
+        <View style={{ flex: 1, backgroundColor: 'white' }}>
+          {localUserDetails?.ua_cover_pic ? (
+            <ImageBackground
+              style={{
+                height: 190,
+                backgroundColor: 'gray',
+                position: 'relative',
+              }}
+              source={{
+                uri: localUserDetails?.ua_cover_pic || '',
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  top: 60,
+                  right: 10,
+                  borderRadius: 20,
+                  padding: 8,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={onEditCoverPress}
+              >
+                <MaterialCommunityIcons name="pencil" size={24} color="white" />
+              </TouchableOpacity>
+            </ImageBackground>
+          ) : (
+            <View
+              style={{
+                height: 190,
+                backgroundColor: grayColor,
+                justifyContent: 'center',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  height: 190,
+                }}
+                onPress={onEditCoverPress}
+              >
+                <Ionicons name={'camera-outline'} color={'#40514e'} size={40} />
+              </TouchableOpacity>
+            </View>
+          )}
   
->
-
-  <TouchableOpacity
-    style={{
-      justifyContent: 'center',
-      flexDirection:'row',
-      display:'flex',
-      alignItems: 'center',
-      height:190
-    }}
-    onPress={onEditCoverPress}
-  >
-    <Ionicons name={"camera-outline"} color={'#40514e'} size={40}/>
-
-  </TouchableOpacity>
-</View>}
-
-
-    {/* <HomeHeader 
-       position="absolute"
-      /> */}
-      {  <View style={{
- marginTop:-50,
- marginLeft:30,
- flexDirection:'row',
- alignItems:'baseline',
- marginBottom:10
-      }}>
-        {localUserDetails?.ua_profile_pic?    <Image
+          <View
             style={{
-              height: 100,
-              width: 100,
-              borderRadius: 100,
-              overflow: 'hidden',
-              borderColor: 'white',
-              borderWidth: 5,
+              marginTop: -50,
+              marginLeft: 30,
+              flexDirection: 'row',
+              alignItems: 'baseline',
+              marginBottom: 10,
             }}
-            source={{ uri: localUserDetails?.ua_profile_pic}} /> :<TouchableOpacity onPress={onEditLogoPress} style={{
-              height: 100,
-              width: 100,
-              borderRadius: 50,
-              borderWidth: 2,
-              borderColor: "#b0b8b4", // Soft border
-              backgroundColor: "#f5f5f5", // Neumorphic effect
-              justifyContent: "center",
-              alignItems: "center",
-              shadowColor: "#000",
-            }}>
-              
-            <Ionicons name={"camera-outline"} color={'#40514e'} size={40}/>
-              </TouchableOpacity>}
-         
-          
-              <LocalText style={{
-        fontSize:20,
-        fontWeight:'900',
-        color:'black',
-position:'absolute',
-left:105,
-bottom:15
-    }}>
-        {userDetails?.user_first_name+" "+ userDetails?.user_last_name}
-  </LocalText>
-    <MaterialCommunityIcons onPress={()=>{
-      onEditLogoPress()
-    }} style={{
-      position:'absolute',
-      right:20,
-      bottom:10
-    }} name="pencil" size={24} color="black" />
-
-            </View>
-            
-           
-            }
+          >
+            {localUserDetails?.ua_profile_pic ? (
+              <Image
+                style={{
+                  height: 100,
+                  width: 100,
+                  borderRadius: 100,
+                  overflow: 'hidden',
+                  borderColor: 'white',
+                  borderWidth: 5,
+                }}
+                source={{ uri: localUserDetails?.ua_profile_pic }}
+              />
+            ) : (
+              <TouchableOpacity
+                onPress={onEditLogoPress}
+                style={{
+                  height: 100,
+                  width: 100,
+                  borderRadius: 50,
+                  borderWidth: 2,
+                  borderColor: '#b0b8b4',
+                  backgroundColor: '#f5f5f5',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  shadowColor: '#000',
+                }}
+              >
+                <Ionicons name={'camera-outline'} color={'#40514e'} size={40} />
+              </TouchableOpacity>
+            )}
   
-  <TabsSelector setActiveTab={setActiveTab} activeTab={activeTab} />
-
-<ScrollView
-        style={{ flex: 1 }}
-
-      >
- 
-
-
-          {/* {tabsSelector(setActiveTab, activeTab)} */}
-
-<View style={{
-}}>
+            <LocalText
+              style={{
+                fontSize: 20,
+                fontWeight: '900',
+                color: 'black',
+                position: 'absolute',
+                left: 105,
+                bottom: 15,
+              }}
+            >
+              {userDetails?.user_first_name + ' ' + userDetails?.user_last_name}
+            </LocalText>
   
-  {activeTab ==="Portfolio" && <View style={{
-    borderBottomColor:grayColor,
-    paddingVertical:30
-    
-}}>
-<View style={{
-    paddingHorizontal:20,
-    
-}}>
-
-    <View style={{
-            display:'flex',
-            flexDirection:'row',
-            alignItems:'center',
-        }}>
-
-<View style={{
-          width: 50,
-            height: 50,
-            borderRadius: 50,
-            backgroundColor: '#E8ECF4',
+            <MaterialCommunityIcons
+              onPress={onEditLogoPress}
+              style={{
+                position: 'absolute',
+                right: 20,
+                bottom: 10,
+              }}
+              name="pencil"
+              size={24}
+              color="black"
+            />
+          </View>
+  
+          <TabsSelector setActiveTab={setActiveTab} activeTab={activeTab} />
+  
+          <ScrollView style={{ flex: 1 }}>
+            <View>
+              {activeTab === 'Portfolio' && (
+                <View style={{ borderBottomColor: grayColor, paddingVertical: 30 }}>
+                  <View style={{ paddingHorizontal: 20 }}>
+                    {/* Facebook */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <View
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 50,
+                          backgroundColor: '#E8ECF4',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          marginRight: 10,
+                        }}
+                      >
+                        <Icon name="facebook" size={20} color="#3366FF" />
+                      </View>
+                      <TextInput
+                        value={socialUrl.fb}
+                        onChangeText={(text) =>
+                          setSocialUrl((prev) => ({ ...prev, fb: text }))
+                        }
+                        mode="outlined"
+                        style={[styles.inputPaper2, { flex: 1, marginLeft: 10 }]}
+                        placeholder="www.example.com"
+                      />
+                    </View>
+  
+                    {/* LinkedIn */}
+                    <View style={{ flexDirection: 'row', marginTop: 15, alignItems: 'center' }}>
+                      <View
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 50,
+                          backgroundColor: '#E0F7EA',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          marginRight: 10,
+                        }}
+                      >
+                        <Icon name="linkedin-square" size={20} color="#2DCB72" />
+                      </View>
+                      <TextInput
+                        value={socialUrl.linkedIn}
+                        onChangeText={(text) =>
+                          setSocialUrl((prev) => ({ ...prev, linkedIn: text }))
+                        }
+                        mode="outlined"
+                        style={[styles.inputPaper2, { flex: 1, marginLeft: 10 }]}
+                        placeholder="Username"
+                      />
+                    </View>
+  
+                    {/* Instagram */}
+                    <View style={{ flexDirection: 'row', marginTop: 15, alignItems: 'center' }}>
+                      <View
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 50,
+                          backgroundColor: '#FFE9E9',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          marginRight: 10,
+                        }}
+                      >
+                        <Icon name="instagram" size={20} color="#FF6C6C" />
+                      </View>
+                      <TextInput
+                        value={socialUrl.instagram}
+                        onChangeText={(text) =>
+                          setSocialUrl((prev) => ({ ...prev, instagram: text }))
+                        }
+                        mode="outlined"
+                        style={[styles.inputPaper2, { flex: 1, marginLeft: 10 }]}
+                        placeholder="Username"
+                      />
+                    </View>
+  
+                    <LocalButton
+                      onPress={saveSocialURLS}
+                      marginTop={30}
+                      title={'Submit'}
+                      color={'white'}
+                      backgroundColor={'#1f57d6'}
+                    />
+  
+                    <LocalButton
+                      border={'red'}
+                      onPress={() => {
+                        setTwoButtonAlertDetails({
+                          title: 'Delete Account',
+                          message: 'Are you sure to delete account details',
+                          button1Text: 'Delete',
+                          button2Text: 'Cancel',
+                          onButton1Click: () => {
+                            CallAPIPostPromise(
+                              '/del-account/v1/create',
+                              {
+                                userId: userID,
+                              },
+                              token
+                            ).then((res) => {
+                              Toast.show({
+                                text1: 'Request Submitted',
+                                text2: 'Account details will be deleted in 10 days',
+                              });
+                            });
+                          },
+                        });
+                      }}
+                      marginTop={20}
+                      title={'Delete Account'}
+                      color={'red'}
+                      bg={'white'}
+                    />
+  
+                    <LocalText
+                      style={{
+                        color: 'green',
+                        fontSize: 15,
+                        marginTop: 9,
+                        fontWeight: '700',
+                      }}
+                    >
+                      {socialMsg}
+                    </LocalText>
+                  </View>
+                </View>
+              )}
+  
+              {activeTab === 'Packages' && (
+                <PackageDetails setActiveTab={setActiveTab} packageDetails={packageDetails} />
+              )}
+  
+              {activeTab === 'Personal Details' && localUserDetails && (
+                <PersonalDetails
+                  setActiveTab={setActiveTab}
+                  token={token}
+                  dispatch={dispatch}
+                  setLocalUserDetails={setLocalUserDetails}
+                  localUserDetails={localUserDetails}
+                  setShowDatePicker={setShowDatePicker}
+                  date={date}
+                  servicesList={servicesList}
+                  tags={tags}
+                  userID={userID}
+                />
+              )}
+  
+              {activeTab === 'Company Details' && (
+                <CompanyDetails
+                  next={() => setActiveTab('Financials')}
+                  userID={userID}
+                  token={token}
+                  setCompanyDetails={setCompanyDetails}
+                  companyDetails={companyDetails}
+                />
+              )}
+  
+              {activeTab === 'Financials' && (
+                <View style={{ backgroundColor: grayColor2, padding: 10 }}>
+                  <View style={{ backgroundColor: 'white', padding: 20 }}>
+                    <LocalText
+                      style={{
+                        fontSize: 16,
+                        fontWeight: '700',
+                        color: 'black',
+                      }}
+                    >
+                      Financials
+                    </LocalText>
+                    <View style={{ marginTop: 20 }}>
+                      {billingCardInfo ? (
+                        <CardDetails
+                          last4Digits={billingCardInfo.card.last4}
+                          cardholderName={billingCardInfo.billing_details.name}
+                          cardType={billingCardInfo.card.brand}
+                        />
+                      ) : (
+                        <FinancialsScreen />
+                      )}
+                    </View>
+                  </View>
+                </View>
+              )}
+  
+              {activeTab === 'Recent Work' && (
+                <View style={{ backgroundColor: 'white', padding: 20 }}>
+                  <LocalButton
+                    onPress={() => setRecentWorkStatus(true)}
+                    title={'Add Recent Work'}
+                    bg={'#1f57d6'}
+                    color={'white'}
+                  />
+                  <View style={{ marginTop: 10 }}>
+                    {recentWorkList.map((r, key) => (
+                      <RecentWorkCard
+                        onDelete={handleDeleteRecentWork}
+                        details={r}
+                        key={key}
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
+            </View>
+          </ScrollView>
+  
+          <AddRecentWork
+            closeModal={() => {
+              setRecentWorkStatus(false);
+              getRecenetWorks();
+            }}
+            modalVisible={recentWorkStatus}
+          />
+          <TwoButtonAlert setDetails={setTwoButtonAlertDetails} details={twoButtonAlertDetails} />
+        </View>
+      ) : (
+        <View
+          style={{
+            flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            marginRight: 10,
-        
-
-    }}>
-
-       
-        <Icon name="facebook" size={20} color="#3366FF" />
-      </View>
-
-
-<TextInput    value={socialUrl.fb}  onChangeText={(text)=>{
-  setSocialUrl(prev=>{
-    return {
-      ...prev,
-      fb:text
-    }
-  })
-}}     mode="outlined" style={[styles.inputPaper2,{flex:1,marginLeft:10}]} placeholder='www.example.com' />
-
+            backgroundColor: 'white',
+          }}
+        >
+          <LocalText style={{ fontSize: 18, fontWeight: '600', color: 'gray' }}>
+            Please log in to access your profile.
+          </LocalText>
+          <TouchableOpacity
+    onPress={() => navigation.navigate('Login')}
+    style={{
+      marginTop: 20,
+      backgroundColor: GlobalStyles.colors.primary,
+      paddingVertical: 12,
+      paddingHorizontal: 30,
+      borderRadius: 8,
+    }}
+  >
+    <LocalText style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>Login</LocalText>
+  </TouchableOpacity>
         </View>
-
-    
-        <View style={{
-            display:'flex',
-            flexDirection:'row',
-            marginTop:15,
-            alignItems:'center'
-        }}>
-
-<View style={{
-          width: 50,
-            height: 50,
-            borderRadius: 50,
-            backgroundColor: '#E0F7EA',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginRight: 10,
-        
-
-    }}>
-
-       
-        <Icon name="linkedin-square" size={20} color="#2DCB72" />
-      </View>
-
-
-<TextInput   value={socialUrl.linkedIn}  onChangeText={(text)=>{
-  setSocialUrl(prev=>{
-    return {
-      ...prev,
-      linkedIn:text
-    }
-  })
-}}       mode="outlined" style={[styles.inputPaper2,{flex:1,marginLeft:10}]} placeholder='Username'/>
-
-        </View>
-
-
-        <View style={{
-            display:'flex',
-            flexDirection:'row',
-            marginTop:15,
-            alignItems:'center'
-        }}>
-
-<View style={{
-            width: 50,
-            height: 50,
-            borderRadius: 50,
-            backgroundColor: '#FFE9E9',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginRight: 10,
-        
-
-    }}>
-
-       
-        <Icon name="instagram" size={20} color="#FF6C6C" />
-      </View>
-
-
-<TextInput  value={socialUrl.instagram}  onChangeText={(text)=>{
-  setSocialUrl(prev=>{
-    return {
-      ...prev,
-      instagram:text
-    }
-  })
-}}    mode="outlined" style={[styles.inputPaper2,{flex:1,marginLeft:10}]} placeholder='Username'/>
-
-        </View>
-
-<LocalButton onPress={saveSocialURLS} marginTop={30} title={'Submit'} color={'white'} backgroundColor={"#1f57d6"} />
-<LocalButton border={'red'} onPress={()=>{
-setTwoButtonAlertDetails({
-  title:'Delete Account',
-  message:'Are you sure to delete account details',
-  button1Text:'Delete',
-  button2Text:'Cancel',
-  onButton1Click:()=>{
- CallAPIPostPromise('/del-account/v1/create',{
-    userId: userID
-  },token).then((res)=>{
-Toast.show({
-  text1:'Request Submited',
-  text2:'Account details will be deleted in 10 days'
-})
-  })
-  }
-})
- 
-}} marginTop={20} title={'Delete Account'} color={'red'} bg={'white'} />
-
-<LocalText style={{
-  color:'green',
-  fontSize:15,
-  marginTop:9,
-  fontWeight:700
-}}>
-
-  {socialMsg} 
-</LocalText>
-
-
-</View>
-
-
-
-
-</View>}
-
-{activeTab ==="Packages" &&
-          <PackageDetails setActiveTab={setActiveTab} packageDetails={packageDetails} />
-      
-          }
-
-
-          {activeTab ==="Personal Details" && localUserDetails && 
-      <PersonalDetails setActiveTab={setActiveTab} token={token} dispatch={dispatch} setLocalUserDetails={setLocalUserDetails} localUserDetails={localUserDetails} setShowDatePicker={setShowDatePicker} date={date} servicesList={servicesList} tags={tags} userID={userID} />
-          }
-
-          {activeTab ==="Company Details" && 
-            <CompanyDetails next={()=>{
-              setActiveTab('Financials')
-            }} userID={userID} token={token} setCompanyDetails={setCompanyDetails} companyDetails={companyDetails} />
-          }
-
-          {activeTab ==="Financials" && 
-                      <View style={{
-                        backgroundColor:grayColor2,
-                        padding:10,
-                      }}>
-                
-                <View style={{
-                              backgroundColor:'white',
-                              padding:20
-                            }}>
-      <LocalText style={{
-        fontSize:16,
-        fontWeight:700,
-        color:'black'
-      }}>
-    Financials
-    </LocalText>
-      <View style={{
-        marginTop:20
-      }}>
-{billingCardInfo ?   <CardDetails last4Digits={billingCardInfo.card.last4} cardholderName={billingCardInfo.billing_details.name} cardType={billingCardInfo.card.brand} /> :<FinancialsScreen />}
-    
-</View>
-      </View>
-      </View> 
-          }
-
-          {activeTab ==="Recent Work" && 
-                           <View style={{
-                            backgroundColor:'white',
-                            padding:20,
-                          }}>
-                    
-                    <View style={{
-
-                                }}>
-   
-          <View style={{
-          }}>
-<LocalButton onPress={()=>{
-  setRecentWorkStatus(true)
-}} title={'Add Recent Work'} bg={"#1f57d6"} color={'white'}/>
-            </View>
-<View style={{
-  marginTop:10
-}}>
-{recentWorkList.map((r,key)=>{
-  return (
-<RecentWorkCard onDelete={handleDeleteRecentWork} details={r}  key={key}/>
-
-  )
-})}
-</View>
-            </View>
-            </View>
-          }
-
-          
-</View>
-     
-
-
-            
-</ScrollView>
-<SpinnerLoading />
-<AddRecentWork closeModal={()=>{
-  setRecentWorkStatus(false)
-  getRecenetWorks()
-}}  modalVisible={recentWorkStatus}/>
-<TwoButtonAlert  setDetails={setTwoButtonAlertDetails} details={twoButtonAlertDetails}/>
-    </View>
-  )
+      )}
+    </>
+  );
+  
 }
 const styles = StyleSheet.create({
     container: {

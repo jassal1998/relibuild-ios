@@ -63,7 +63,7 @@ console.log(contractors,"dfdfdf")
   source={
     item.ua_profile_pic
       ? { uri: item.ua_profile_pic } 
-      : require('../../assets/images/relibuild.jpg')
+      : require('../../assets/images/cont.jpg')
   }
   style={style.image}
 />

@@ -26,33 +26,43 @@ useEffect(() => {
   const checkOnboardingStatus = async () => {
     try {
       const hasCompletedOnboarding = await AsyncStorage.getItem("hasCompletedOnboarding");
-      const token = await AsyncStorage.getItem("authUser"); // Check for token
+      const token = await AsyncStorage.getItem("authUser");
 
-      console.log("Onboarding Completed:", hasCompletedOnboarding);
-      console.log("Token:", token);
+      console.log("➡️ Onboarding Completed:", hasCompletedOnboarding);
+      console.log("🔐 Token:", token);
 
-
-      if (!token) {
-        navigation.navigate("Welcome"); // If no token, navigate to Welcome
-      } else if (hasCompletedOnboarding === "true") {
-        // If onboarding is completed and token exists, navigate to Home
-        navigation.navigate("Home");
-      } else {
-        // Show onboarding if the user hasn't completed it yet
+      // ✅ Show onboarding first if not completed
+      if (hasCompletedOnboarding !== "true") {
+        console.log("📝 Onboarding not done — show onboarding");
         setIsChecked(true);
+        return;
       }
+
+      // ✅ Then check login token
+      if (!token) {
+        console.log("👋 Not logged in — go to Welcome");
+        navigation.navigate("Welcome");
+        return;
+      }
+
+      // ✅ Logged in and onboarding done
+      console.log("✅ Logged in & onboarding done — go to Home");
+      navigation.navigate("Home");
+
     } catch (error) {
-      console.error("Error checking onboarding status:", error);
-      setIsChecked(true);
+      console.error("❌ Error checking onboarding status:", error);
+      setIsChecked(true); // fallback to onboarding
     }
   };
 
   checkOnboardingStatus();
 }, [navigation]);
 
+
 if (!isChecked) {
-  return null; // Wait until onboarding/check is done
+  return null;
 }
+
 
 
 
@@ -82,7 +92,7 @@ if (!isChecked) {
       console.log("Stored onboarding value:", storedValue);
   
      
-      const token = await AsyncStorage.getItem("userToken");
+      const token = await AsyncStorage.getItem("authUser");
   
       if (token) {
       

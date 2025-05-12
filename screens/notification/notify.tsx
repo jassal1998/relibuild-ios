@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   markAllText: {
     fontSize: 14,
-    color: 'blue',
+    color: "#325574",
   },
   notificationCard: {
     flexDirection: 'row',

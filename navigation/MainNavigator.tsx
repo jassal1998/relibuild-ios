@@ -86,7 +86,7 @@ const MainNavigator: React.FC<MainNavigatorProps> = () => {
             <Stack.Screen
               name="Welcome"
               component={WelcomeScreen}
-              options={{headerShown: false}}
+              options={{headerShown: false, gestureEnabled: false, }}
             />
           </>
         ) : (
@@ -94,7 +94,7 @@ const MainNavigator: React.FC<MainNavigatorProps> = () => {
             <Stack.Screen
               name="Welcome"
               component={WelcomeScreen}
-              options={{headerShown: false}}
+              options={{headerShown: false,gestureEnabled: false,}}
             />
             <Stack.Screen
               name="Home"
@@ -362,7 +362,8 @@ const MainNavigator: React.FC<MainNavigatorProps> = () => {
                     flexDirection: 'row',
                     justifyContent: 'center',
                     alignItems: 'center',
-                  }}>
+                  }}>rm -rf android/app/build
+rm -rf android/build
                   <View>
                     <Text
                       allowFontScaling={true}

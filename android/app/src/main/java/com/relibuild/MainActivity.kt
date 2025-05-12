@@ -1,4 +1,4 @@
-package com.relibuild
+package app.relibuildv4.com
 
 import android.os.Bundle  // Import Bundle
 import com.facebook.react.ReactActivity

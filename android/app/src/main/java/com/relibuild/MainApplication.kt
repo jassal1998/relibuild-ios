@@ -1,4 +1,4 @@
-package com.relibuild
+package app.relibuildv4.com
 
 import android.app.Application
 import com.facebook.react.PackageList

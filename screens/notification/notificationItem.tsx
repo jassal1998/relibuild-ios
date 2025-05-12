@@ -12,24 +12,22 @@ interface Notification {
 
 let notificationListeners: ((notification: Notification) => void)[] = [];
 
-// Add listener for notifications
+// Add listener
 export const addNotificationListener = (
   listener: (notification: Notification) => void,
 ) => {
   notificationListeners.push(listener);
 };
 
-// Remove listener for notifications
+// Remove listener
 export const removeNotificationListener = (
   listener: (notification: Notification) => void,
 ) => {
   notificationListeners = notificationListeners.filter(l => l !== listener);
 };
 
-// Request notification permission
-
+// Request permission
 export const requestPermission = async () => {
-  // Firebase permission (works for iOS and Android both)
   const authStatus = await messaging().requestPermission();
   const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -39,10 +37,9 @@ export const requestPermission = async () => {
     console.log('✅ Firebase permission granted.');
   }
 
-  // Runtime permission for Android 13+
   if (Platform.OS === 'android' && Platform.Version >= 33) {
     const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
     );
 
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -52,7 +49,8 @@ export const requestPermission = async () => {
     }
   }
 };
-// Get FCM token
+
+// Get FCM Token
 export const getFcmToken = async () => {
   try {
     const token = await messaging().getToken();
@@ -62,7 +60,7 @@ export const getFcmToken = async () => {
   }
 };
 
-// Save notifications to AsyncStorage
+// Save notifications
 const saveNotifications = async (notifications: Notification[]) => {
   try {
     await AsyncStorage.setItem('notifications', JSON.stringify(notifications));
@@ -71,18 +69,18 @@ const saveNotifications = async (notifications: Notification[]) => {
   }
 };
 
-// Load notifications from AsyncStorage
+// Load notifications
 export const loadNotifications = async () => {
   try {
-    const storedNotifications = await AsyncStorage.getItem('notifications');
-    return storedNotifications ? JSON.parse(storedNotifications) : [];
+    const stored = await AsyncStorage.getItem('notifications');
+    return stored ? JSON.parse(stored) : [];
   } catch (error) {
     console.error('Error loading notifications:', error);
     return [];
   }
 };
 
-// Handle notification
+// Handle incoming notification
 export const handleNotification = async (
   remoteMessage: any,
   notifications: Notification[],
@@ -91,20 +89,23 @@ export const handleNotification = async (
   appState: string,
 ) => {
   const newNotification: Notification = {
-      id: Date.now().toString(),
-      title: remoteMessage.notification?.title || 'New Notification',
-      body: remoteMessage.notification?.body || '',
-      read: false
+    id: Date.now().toString(),
+    title: remoteMessage.notification?.title || 'New Notification',
+    body: remoteMessage.notification?.body || '',
+    read: false,
   };
 
   notifications = [newNotification, ...notifications];
   await saveNotifications(notifications);
-setUnreadCount(notifications.length);
+  setNotifications(notifications);
 
-  notificationListeners.forEach(listener => listener(newNotification));
+  const unreadNotifications = notifications.filter((n) => !n.read);
+  setUnreadCount(unreadNotifications.length);
 
-  
-  if (AppState.currentState === 'active') {
+  notificationListeners.forEach((listener) => listener(newNotification));
+
+  if (appState === 'active') {
+    // Android: create channel first
     if (Platform.OS === 'android') {
       await notifee.createChannel({
         id: 'default',
@@ -113,16 +114,24 @@ setUnreadCount(notifications.length);
         importance: AndroidImportance.HIGH,
       });
     }
+
+    // ✅ Show notification manually (Android + iOS both)
     await notifee.displayNotification({
       title: newNotification.title,
       body: newNotification.body,
-      android: {channelId: 'default', sound: 'default'},
-      ios: {sound: 'default'},
+      android: {
+        channelId: 'default',
+        sound: 'default',
+        pressAction: { id: 'default' }, // for tap actions
+      },
+      ios: {
+        sound: 'default',
+      },
     });
   }
 };
 
-// Process notification wrapper to match Firebase API
+// Process wrapper
 export const processNotification = async (remoteMessage: any) => {
   const storedNotifications = await loadNotifications();
   handleNotification(
@@ -134,57 +143,48 @@ export const processNotification = async (remoteMessage: any) => {
   );
 };
 
-
-
+// Initialize Notifications
 export const initializeNotifications = async (
   setUnreadCount: React.Dispatch<React.SetStateAction<number>>,
   setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>,
 ) => {
- 
   await getFcmToken();
 
-  messaging().onMessage(async remoteMessage => {
-    processNotification(remoteMessage);
+  messaging().onMessage(async (remoteMessage) => {
+    await processNotification(remoteMessage);
 
-    const storedNotifications = await loadNotifications();
-    setNotifications(storedNotifications);
+    const stored = await loadNotifications();
+    setNotifications(stored);
 
-    // ✅ Fix: Explicitly type 'n' as a Notification
-    const unreadNotifications = storedNotifications.filter(
-      (n: Notification) => !n.read,
-    );
-    setUnreadCount(unreadNotifications.length);
+    const unread = stored.filter((n: { read: any; }) => !n.read);
+    setUnreadCount(unread.length);
   });
 
-  messaging().setBackgroundMessageHandler(async remoteMessage => {
-    processNotification(remoteMessage);
+  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+    await processNotification(remoteMessage);
 
-    const storedNotifications = await loadNotifications();
-    setNotifications(storedNotifications);
+    const stored = await loadNotifications();
+    setNotifications(stored);
 
-    const unreadNotifications = storedNotifications.filter(
-      (n: Notification) => !n.read,
-    );
-    setUnreadCount(unreadNotifications.length);
+    const unread = stored.filter((n: { read: any; }) => !n.read);
+    setUnreadCount(unread.length);
   });
 
-  messaging()
-    .getInitialNotification()
-    .then(remoteMessage => {
-      if (remoteMessage) {
-        processNotification(remoteMessage);
-        setUnreadCount(prevCount => prevCount + 1);
-      }
-    });
+  messaging().getInitialNotification().then(async (remoteMessage) => {
+    if (remoteMessage) {
+      await processNotification(remoteMessage);
 
-  // Load notifications from AsyncStorage on startup
-  const storedNotifications = await loadNotifications();
-  setNotifications(storedNotifications);
+      const stored = await loadNotifications();
+      setNotifications(stored);
 
-  // ✅ Fix: Explicitly type 'n' as a Notification
-  const unreadNotifications = storedNotifications.filter(
-    (n: Notification) => !n.read,
-  );
-  setUnreadCount(unreadNotifications.length);
+      const unread = stored.filter((n: { read: any; }) => !n.read);
+      setUnreadCount(unread.length);
+    }
+  });
+
+  const stored = await loadNotifications();
+  setNotifications(stored);
+
+  const unread = stored.filter((n: { read: any; }) => !n.read);
+  setUnreadCount(unread.length);
 };
-;
